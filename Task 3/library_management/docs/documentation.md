@@ -42,6 +42,9 @@ This file contains the `Library` struct and methods to manage books and members.
 
 1. **Run the Application**:
    - Execute the `main.go` file to start the application.
+      ```
+      go run main.go
+      ```
 
 2. **Menu Options**:
    - **Add Book**: Adds a new book to the library.
