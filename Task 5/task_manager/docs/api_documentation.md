@@ -259,6 +259,3 @@ func DeleteTask(id int) error {
 
 ## Testing
 Use Postman or similar tools to test the API endpoints. Verify that tasks can be created, retrieved, updated, and deleted successfully. Additionally, use MongoDB Compass or direct MongoDB queries to verify the correctness of data stored in MongoDB.
-
-## Conclusion
-This document provides an updated overview of the Task Management API, including instructions for setting up MongoDB and enhancing the API with persistent data storage. Follow the provided guidelines to ensure successful integration and testing of the API.
