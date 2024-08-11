@@ -1,27 +1,31 @@
-package data
+package Usecases
 
 import (
 	"errors"
 	"fmt"
 	"log"
-	"task_manager/models"
+	"task_manager/Domain"
+	"task_manager/Repositories"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
 
+var user_ctx = Repositories.GetContext()
+var user_collection = Repositories.GetUserCollection()
+
 // Returns a list of all users from the database
-func GetUsers() []models.User {
-	var users []models.User
-	cursor, err := user_collection.Find(ctx, bson.M{})
+func GetUsers() []Domain.User {
+	var users []Domain.User
+	cursor, err := user_collection.Find(user_ctx, bson.M{})
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	for cursor.Next(ctx) {
-		var user models.User
+	for cursor.Next(user_ctx) {
+		var user Domain.User
 		if err := cursor.Decode(&user); err != nil {
 			log.Fatal(err)
 		}
@@ -36,7 +40,7 @@ func GetUsers() []models.User {
 // First user will have role as "admin" by default
 // Password is hashed before it is stored in the database
 // Username is validated to be unique
-func CreateUser(user models.User) error {
+func CreateUser(user Domain.User) error {
 	users := GetUsers()
 	if len(users) == 0 {
 		user.Role = "admin"
@@ -58,7 +62,7 @@ func CreateUser(user models.User) error {
 	}
 
 	user.Password = string(hashedPassword)
-	if _, err := user_collection.InsertOne(ctx, user); err != nil {
+	if _, err := user_collection.InsertOne(user_ctx, user); err != nil {
 		return err
 	}
 
@@ -68,7 +72,7 @@ func CreateUser(user models.User) error {
 // Promotes the user whose id is given into an "admin"
 func Promote(id int) error {
 	filter := bson.M{"id": id}
-	user := user_collection.FindOne(ctx, filter)
+	user := user_collection.FindOne(user_ctx, filter)
 
 	if err := user.Err(); err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -79,8 +83,9 @@ func Promote(id int) error {
 		return err
 	}
 
+	fmt.Println("PROMOTED USER IS ", user)
 	update := bson.M{"$set": bson.M{"role": "admin"}}
-	_, err := user_collection.UpdateOne(ctx, filter, update)
+	_, err := user_collection.UpdateOne(user_ctx, filter, update)
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -89,10 +94,10 @@ func Promote(id int) error {
 }
 
 // Returns use whose username matches the inputted username
-func GetUserbyUsername(username string) (models.User, error) {
+func GetUserbyUsername(username string) (Domain.User, error) {
 	filter := bson.M{"username": username}
-	var user models.User
-	err := user_collection.FindOne(ctx, filter).Decode(&user)
+	var user Domain.User
+	err := user_collection.FindOne(user_ctx, filter).Decode(&user)
 	if err != nil {
 		return user, err
 
