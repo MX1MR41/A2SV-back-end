@@ -9,8 +9,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var taskService data.TaskService = *data.NewTaskService()
+
 func GetTasks(c *gin.Context) {
-	tasks := data.GetTasks()
+	tasks := taskService.GetTasks()
 	c.JSON(http.StatusOK, tasks)
 }
 
@@ -21,7 +23,7 @@ func GetTaskByID(c *gin.Context) {
 		return
 	}
 
-	task, err := data.GetTaskByID(id)
+	task, err := taskService.GetTaskByID(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
@@ -37,7 +39,7 @@ func CreateTask(c *gin.Context) {
 		return
 	}
 
-	task = data.CreateTask(task)
+	task = taskService.CreateTask(task)
 	c.JSON(http.StatusCreated, task)
 }
 
@@ -54,7 +56,7 @@ func UpdateTask(c *gin.Context) {
 		return
 	}
 
-	task, err := data.UpdateTask(id, updatedTask)
+	task, err := taskService.UpdateTask(id, updatedTask)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
@@ -70,7 +72,7 @@ func DeleteTask(c *gin.Context) {
 		return
 	}
 
-	if err := data.DeleteTask(id); err != nil {
+	if err := taskService.DeleteTask(id); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
