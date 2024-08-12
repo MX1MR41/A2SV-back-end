@@ -12,8 +12,21 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type IUserService interface {
+	GetUsers() []models.User
+	CreateUser(user models.User) error
+	Promote(id int) error
+	GetUserbyUsername(username string) (models.User, error)
+}
+
+type UserService struct{}
+
+func NewUserService() IUserService {
+	return &UserService{}
+}
+
 // Returns a list of all users from the database
-func GetUsers() []models.User {
+func (m *UserService) GetUsers() []models.User {
 	var users []models.User
 	cursor, err := user_collection.Find(ctx, bson.M{})
 
@@ -37,8 +50,8 @@ func GetUsers() []models.User {
 // First user will have role as "admin" by default
 // Password is hashed before it is stored in the database
 // Username is validated to be unique
-func CreateUser(user models.User) error {
-	users := GetUsers()
+func (m *UserService) CreateUser(user models.User) error {
+	users := m.GetUsers()
 	if len(users) == 0 {
 		user.Role = "admin"
 	} else {
@@ -69,7 +82,7 @@ func CreateUser(user models.User) error {
 }
 
 // Promotes the user whose id is given into an "admin"
-func Promote(id int) error {
+func (m *UserService) Promote(id int) error {
 	filter := bson.M{"id": id}
 	user := user_collection.FindOne(ctx, filter)
 
@@ -92,7 +105,7 @@ func Promote(id int) error {
 }
 
 // Returns use whose username matches the inputted username
-func GetUserbyUsername(username string) (models.User, error) {
+func (m *UserService) GetUserbyUsername(username string) (models.User, error) {
 	filter := bson.M{"username": username}
 	var user models.User
 	err := user_collection.FindOne(ctx, filter).Decode(&user)

@@ -10,8 +10,22 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+type ITaskService interface {
+	GetTasks() []models.Task
+	GetTaskByID(id int) (*models.Task, error)
+	CreateTask(task models.Task) (models.Task, error)
+	UpdateTask(id int, updatedTask models.Task) (*models.Task, error)
+	DeleteTask(id int) error
+}
+
+type TaskService struct{}
+
+func NewTaskService() ITaskService {
+	return &TaskService{}
+}
+
 // GetTasks retrieves all tasks from the MongoDB collection
-func GetTasks() []models.Task {
+func (m *TaskService) GetTasks() []models.Task {
 	var tasks []models.Task
 	// Find all tasks in the collection and store them in the cursor variable
 	cursor, err := task_collection.Find(ctx, bson.M{})
@@ -37,7 +51,7 @@ func GetTasks() []models.Task {
 }
 
 // GetTaskByID retrieves a task by its ID from the MongoDB collection
-func GetTaskByID(id int) (*models.Task, error) {
+func (m *TaskService) GetTaskByID(id int) (*models.Task, error) {
 	var task models.Task
 	// A filter to find the document(task) that matches id
 	filter := bson.M{"id": id}
@@ -53,7 +67,7 @@ func GetTaskByID(id int) (*models.Task, error) {
 }
 
 // CreateTask inserts a new task into the MongoDB collection
-func CreateTask(task models.Task) (models.Task, error) {
+func (m *TaskService) CreateTask(task models.Task) (models.Task, error) {
 	task.ID = getNextTaskID()
 	_, err := task_collection.InsertOne(ctx, task)
 	if err != nil {
@@ -63,7 +77,7 @@ func CreateTask(task models.Task) (models.Task, error) {
 }
 
 // UpdateTask updates an existing task in the MongoDB collection by its ID
-func UpdateTask(id int, updatedTask models.Task) (*models.Task, error) {
+func (m *TaskService) UpdateTask(id int, updatedTask models.Task) (*models.Task, error) {
 	filter := bson.M{"id": id}
 	// This parameter will hold and update the values as inputted
 	update := bson.M{
@@ -89,7 +103,7 @@ func UpdateTask(id int, updatedTask models.Task) (*models.Task, error) {
 }
 
 // DeleteTask deletes a task from the MongoDB collection by its ID
-func DeleteTask(id int) error {
+func (m *TaskService) DeleteTask(id int) error {
 	filter := bson.M{"id": id}
 	result, err := task_collection.DeleteOne(ctx, filter)
 	if err != nil {

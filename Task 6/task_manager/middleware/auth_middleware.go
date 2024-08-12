@@ -13,6 +13,7 @@ import (
 
 // Global variable with which tokens will be hashed with and signed on
 var jwtSecret = []byte("shhhh... it's a secret")
+var userService = data.NewUserService()
 
 // Login functionality
 func Login(c *gin.Context) {
@@ -23,7 +24,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	existingUser, err := data.GetUserbyUsername(user.Username)
+	existingUser, err := userService.GetUserbyUsername(user.Username)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return

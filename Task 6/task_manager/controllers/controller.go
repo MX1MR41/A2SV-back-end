@@ -9,10 +9,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var taskService = data.NewTaskService()
+var userService = data.NewUserService()
+
 // GetTasks retrieves all tasks from the MongoDB collection
 func GetTasks(c *gin.Context) {
 	// Call the GetTasks function from the data package to retrieve all tasks
-	tasks := data.GetTasks()
+	tasks := taskService.GetTasks()
 	// Serialize the tasks into JSON format and return them in the response
 	c.JSON(http.StatusOK, tasks)
 }
@@ -26,7 +29,7 @@ func GetTaskByID(c *gin.Context) {
 		return
 	}
 	// Call the GetTaskByID function from the data package to retrieve the task by its ID
-	task, err := data.GetTaskByID(id)
+	task, err := taskService.GetTaskByID(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
@@ -45,7 +48,7 @@ func CreateTask(c *gin.Context) {
 		return
 	}
 	// Call the CreateTask function from the data package to insert the new task
-	task, _ = data.CreateTask(task)
+	task, _ = taskService.CreateTask(task)
 	// Serialize the task into JSON format and return it in the response
 	c.JSON(http.StatusCreated, task)
 }
@@ -65,7 +68,7 @@ func UpdateTask(c *gin.Context) {
 	}
 
 	// Call the UpdateTask function from the data package to update the task
-	task, err := data.UpdateTask(id, updatedTask)
+	task, err := taskService.UpdateTask(id, updatedTask)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
@@ -83,7 +86,7 @@ func DeleteTask(c *gin.Context) {
 		return
 	}
 
-	if err := data.DeleteTask(id); err != nil {
+	if err := taskService.DeleteTask(id); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
@@ -93,7 +96,7 @@ func DeleteTask(c *gin.Context) {
 
 // GetUsers retrieves all users from the MongoDB collection
 func GetUsers(c *gin.Context) {
-	users := data.GetUsers()
+	users := userService.GetUsers()
 	c.JSON(http.StatusOK, users)
 }
 
@@ -105,7 +108,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	if err := data.CreateUser(user); err != nil {
+	if err := userService.CreateUser(user); err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
@@ -120,7 +123,7 @@ func Promote(c *gin.Context) {
 		c.JSON(400, gin.H{"error": "Invalid user ID"})
 		return
 	}
-	if err := data.Promote(id); err != nil {
+	if err := userService.Promote(id); err != nil {
 		c.JSON(401, gin.H{"error": err.Error()})
 		return
 	}
