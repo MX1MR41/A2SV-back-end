@@ -8,6 +8,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var task_collection = Repositories.GetTaskCollection()
@@ -57,6 +58,7 @@ func GetTaskByID(id int) (*Domain.Task, error) {
 
 // CreateTask inserts a new task into the MongoDB collection
 func CreateTask(task Domain.Task) (Domain.Task, error) {
+	task.ID = getNextTaskID()
 	_, err := task_collection.InsertOne(task_ctx, task)
 	if err != nil {
 		return task, err
@@ -101,4 +103,15 @@ func DeleteTask(id int) error {
 		return errors.New("task not found")
 	}
 	return nil
+}
+
+func getNextTaskID() int {
+	var task Domain.Task
+	findOptions := options.FindOne().SetSort(bson.D{{Key: "id", Value: -1}})
+	err := task_collection.FindOne(task_ctx, bson.D{}, findOptions).Decode(&task)
+	if err != nil {
+		// If no tasks exist, return 1 as the first ID
+		return 1
+	}
+	return task.ID + 1
 }

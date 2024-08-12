@@ -8,6 +8,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -43,6 +44,8 @@ func CreateUser(user models.User) error {
 	} else {
 		user.Role = "user"
 	}
+
+	user.ID = getNextUserID()
 
 	user_name := user.Username
 
@@ -98,4 +101,15 @@ func GetUserbyUsername(username string) (models.User, error) {
 
 	}
 	return user, nil
+}
+
+func getNextUserID() int {
+	var user models.User
+	findOptions := options.FindOne().SetSort(bson.D{{Key: "id", Value: -1}})
+	err := user_collection.FindOne(ctx, bson.D{}, findOptions).Decode(&user)
+	if err != nil {
+		// If no users exist, return 1 as the first ID
+		return 1
+	}
+	return user.ID + 1
 }

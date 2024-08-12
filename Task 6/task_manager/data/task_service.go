@@ -7,6 +7,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // GetTasks retrieves all tasks from the MongoDB collection
@@ -53,6 +54,7 @@ func GetTaskByID(id int) (*models.Task, error) {
 
 // CreateTask inserts a new task into the MongoDB collection
 func CreateTask(task models.Task) (models.Task, error) {
+	task.ID = getNextTaskID()
 	_, err := task_collection.InsertOne(ctx, task)
 	if err != nil {
 		return task, err
@@ -97,4 +99,15 @@ func DeleteTask(id int) error {
 		return errors.New("task not found")
 	}
 	return nil
+}
+
+func getNextTaskID() int {
+	var task models.Task
+	findOptions := options.FindOne().SetSort(bson.D{{Key: "id", Value: -1}})
+	err := task_collection.FindOne(ctx, bson.D{}, findOptions).Decode(&task)
+	if err != nil {
+		// If no tasks exist, return 1 as the first ID
+		return 1
+	}
+	return task.ID + 1
 }

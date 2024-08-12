@@ -110,7 +110,6 @@ This API uses JWT (JSON Web Tokens) for authentication and authorization. Users 
 - **Request Body:**
   ```json
   {
-	"id" : "int",
     "title": "string",
     "description": "string",
 	"due_date": "string",
