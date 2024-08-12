@@ -161,24 +161,26 @@ This API uses JWT (JSON Web Tokens) for authentication and authorization. Users 
 
 ```plaintext
 task_manager/
-├── main.go
-├── controllers/
-│   ├── task_controller.go   # Handles HTTP requests related to tasks
-│   └── user_controller.go   # Handles HTTP requests related to users
-├── models/
-│   ├── task.go              # Defines the Task model
-│   └── user.go              # Defines the User model
-├── data/
-│   ├── task_repository.go   # Contains data manipulation functions for tasks
-│   ├── user_repository.go   # Contains data manipulation functions for users
-│   └── database.go          # Initializes the MongoDB connection
-├── middleware/
-│   └── auth_middleware.go   # Implements middleware to validate JWT tokens for authentication and authorization
-├── router/
-│   └── router.go            # Sets up the routes and initializes the Gin router
-├── docs/
-│   └── api_documentation.md # Contains API documentation
-└── go.mod                   # Defines the module and its dependencies
+├── Delivery/
+│   ├── main.go
+│   ├── controllers/
+│   │   └── controller.go
+│   └── routers/
+│       └── router.go
+├── Domain/
+│   └── domain.go
+├── Infrastructure/
+│   ├── auth_middleWare.go
+│   ├── jwt_service.go
+│   └── password_service.go
+├── Repositories/
+│   ├── database.go
+│   ├── task_repository.go
+│   └── user_repository.go
+└── Usecases/
+    ├── task_usecases.go
+    └── user_usecases.go
+
 ```
 
 **Key Files:**
