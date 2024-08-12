@@ -1,4 +1,4 @@
-package Infrastucture
+package Infrastructure
 
 import (
 	"fmt"
@@ -10,6 +10,8 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
+var userservice = Usecases.NewUserService() // userservice is an instance of UserService
+
 // Login functionality
 func Login(c *gin.Context) {
 	var user Domain.User
@@ -20,7 +22,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	existingUser, err := Usecases.GetUserbyUsername(user.Username)
+	existingUser, err := userservice.GetUserbyUsername(user.Username)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return

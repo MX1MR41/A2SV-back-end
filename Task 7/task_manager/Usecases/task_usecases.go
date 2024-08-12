@@ -11,11 +11,29 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var task_collection = Repositories.GetTaskCollection()
 var task_ctx = Repositories.GetContext()
 
+var taskRepo = Repositories.NewTaskRepository()    // taskRepo is an instance of TaskRepository
+var task_collection = taskRepo.GetTaskCollection() // task_collection is a mongo collection of tasks
+// ITaskService is an interface for TaskService
+type ITaskService interface {
+	GetTasks() []Domain.Task
+	GetTaskByID(id int) (*Domain.Task, error)
+	CreateTask(task Domain.Task) (Domain.Task, error)
+	UpdateTask(id int, updatedTask Domain.Task) (*Domain.Task, error)
+	DeleteTask(id int) error
+}
+
+// TaskService is a struct for TaskService
+type TaskService struct{}
+
+// NewTaskService returns a new instance of TaskService
+func NewTaskService() ITaskService {
+	return &TaskService{}
+}
+
 // GetTasks retrieves all tasks from the MongoDB collection
-func GetTasks() []Domain.Task {
+func (t *TaskService) GetTasks() []Domain.Task {
 	var tasks []Domain.Task
 	// Find all tasks in the collection and store them in the cursor variable
 	cursor, err := task_collection.Find(task_ctx, bson.M{})
@@ -41,7 +59,7 @@ func GetTasks() []Domain.Task {
 }
 
 // GetTaskByID retrieves a task by its ID from the MongoDB collection
-func GetTaskByID(id int) (*Domain.Task, error) {
+func (t *TaskService) GetTaskByID(id int) (*Domain.Task, error) {
 	var task Domain.Task
 	// A filter to find the document(task) that matches id
 	filter := bson.M{"id": id}
@@ -57,7 +75,7 @@ func GetTaskByID(id int) (*Domain.Task, error) {
 }
 
 // CreateTask inserts a new task into the MongoDB collection
-func CreateTask(task Domain.Task) (Domain.Task, error) {
+func (t *TaskService) CreateTask(task Domain.Task) (Domain.Task, error) {
 	task.ID = getNextTaskID()
 	_, err := task_collection.InsertOne(task_ctx, task)
 	if err != nil {
@@ -67,7 +85,7 @@ func CreateTask(task Domain.Task) (Domain.Task, error) {
 }
 
 // UpdateTask updates an existing task in the MongoDB collection by its ID
-func UpdateTask(id int, updatedTask Domain.Task) (*Domain.Task, error) {
+func (t *TaskService) UpdateTask(id int, updatedTask Domain.Task) (*Domain.Task, error) {
 	filter := bson.M{"id": id}
 	// This parameter will hold and update the values as inputted
 	update := bson.M{
@@ -93,7 +111,7 @@ func UpdateTask(id int, updatedTask Domain.Task) (*Domain.Task, error) {
 }
 
 // DeleteTask deletes a task from the MongoDB collection by its ID
-func DeleteTask(id int) error {
+func (t *TaskService) DeleteTask(id int) error {
 	filter := bson.M{"id": id}
 	result, err := task_collection.DeleteOne(task_ctx, filter)
 	if err != nil {

@@ -9,16 +9,40 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// IController is an interface for the Controller struct
+type IController interface {
+	GetTasks(c *gin.Context)
+	GetTaskByID(c *gin.Context)
+	CreateTask(c *gin.Context)
+	UpdateTask(c *gin.Context)
+	DeleteTask(c *gin.Context)
+	GetUsers(c *gin.Context)
+	CreateUser(c *gin.Context)
+	Promote(c *gin.Context)
+}
+
+// Controller is a struct for the Controller
+// Empty struct to implement the IController interface
+type Controller struct{}
+
+// NewController returns a new instance of Controller
+func NewController() IController {
+	return &Controller{}
+}
+
+var taskService = Usecases.NewTaskService() // taskService is an instance of TaskService
+var userService = Usecases.NewUserService() // userService is an instance of UserService
+
 // GetTasks retrieves all tasks from the MongoDB collection
-func GetTasks(c *gin.Context) {
+func (t *Controller) GetTasks(c *gin.Context) {
 	// Call the GetTasks function from the Usecases package to retrieve all tasks
-	tasks := Usecases.GetTasks()
+	tasks := taskService.GetTasks()
 	// Serialize the tasks into JSON format and return them in the response
 	c.JSON(http.StatusOK, tasks)
 }
 
 // GetTaskByID retrieves a task by its ID from the MongoDB collection
-func GetTaskByID(c *gin.Context) {
+func (t *Controller) GetTaskByID(c *gin.Context) {
 	// Convert the task ID from a string to an integer
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -26,7 +50,7 @@ func GetTaskByID(c *gin.Context) {
 		return
 	}
 	// Call the GetTaskByID function from the Usecases package to retrieve the task by its ID
-	task, err := Usecases.GetTaskByID(id)
+	task, err := taskService.GetTaskByID(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
@@ -36,7 +60,7 @@ func GetTaskByID(c *gin.Context) {
 }
 
 // CreateTask inserts a new task into the MongoDB collection
-func CreateTask(c *gin.Context) {
+func (t *Controller) CreateTask(c *gin.Context) {
 	var task Domain.Task
 	// Bind the JSON Usecases from the request body to the task struct
 	if err := c.ShouldBindJSON(&task); err != nil {
@@ -45,13 +69,13 @@ func CreateTask(c *gin.Context) {
 		return
 	}
 	// Call the CreateTask function from the Usecases package to insert the new task
-	task, _ = Usecases.CreateTask(task)
+	task, _ = taskService.CreateTask(task)
 	// Serialize the task into JSON format and return it in the response
 	c.JSON(http.StatusCreated, task)
 }
 
 // UpdateTask updates an existing task in the MongoDB collection by its ID
-func UpdateTask(c *gin.Context) {
+func (t *Controller) UpdateTask(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid task ID"})
@@ -65,7 +89,7 @@ func UpdateTask(c *gin.Context) {
 	}
 
 	// Call the UpdateTask function from the Usecases package to update the task
-	task, err := Usecases.UpdateTask(id, updatedTask)
+	task, err := taskService.UpdateTask(id, updatedTask)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
@@ -76,14 +100,14 @@ func UpdateTask(c *gin.Context) {
 }
 
 // DeleteTask deletes a task from the MongoDB collection by its ID
-func DeleteTask(c *gin.Context) {
+func (t *Controller) DeleteTask(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid task ID"})
 		return
 	}
 
-	if err := Usecases.DeleteTask(id); err != nil {
+	if err := taskService.DeleteTask(id); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
@@ -92,20 +116,20 @@ func DeleteTask(c *gin.Context) {
 }
 
 // GetUsers retrieves all users from the MongoDB collection
-func GetUsers(c *gin.Context) {
-	users := Usecases.GetUsers()
+func (t *Controller) GetUsers(c *gin.Context) {
+	users := userService.GetUsers()
 	c.JSON(http.StatusOK, users)
 }
 
 // CreateUser inserts a new user into the MongoDB collection
-func CreateUser(c *gin.Context) {
+func (t *Controller) CreateUser(c *gin.Context) {
 	var user Domain.User
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := Usecases.CreateUser(user); err != nil {
+	if err := userService.CreateUser(user); err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
@@ -114,13 +138,13 @@ func CreateUser(c *gin.Context) {
 }
 
 // PromoteUser promotes a user to an admin role
-func Promote(c *gin.Context) {
+func (t *Controller) Promote(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Invalid user ID"})
 		return
 	}
-	if err := Usecases.Promote(id); err != nil {
+	if err := userService.Promote(id); err != nil {
 		c.JSON(401, gin.H{"error": err.Error()})
 		return
 	}

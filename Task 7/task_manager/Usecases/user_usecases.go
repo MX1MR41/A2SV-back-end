@@ -14,10 +14,27 @@ import (
 )
 
 var user_ctx = Repositories.GetContext()
-var user_collection = Repositories.GetUserCollection()
+
+var userRepo = Repositories.NewUserRepository()    // userRepo is an instance of UserRepository
+var user_collection = userRepo.GetUserCollection() // user_collection is a mongo collection of users
+// Interface for UserService
+type IUserService interface {
+	GetUsers() []Domain.User
+	CreateUser(user Domain.User) error
+	Promote(id int) error
+	GetUserbyUsername(username string) (Domain.User, error)
+}
+
+// Struct for UserService
+type UserService struct{}
+
+// Returns a new instance of UserService
+func NewUserService() IUserService {
+	return &UserService{}
+}
 
 // Returns a list of all users from the database
-func GetUsers() []Domain.User {
+func (u *UserService) GetUsers() []Domain.User {
 	var users []Domain.User
 	cursor, err := user_collection.Find(user_ctx, bson.M{})
 
@@ -41,8 +58,8 @@ func GetUsers() []Domain.User {
 // First user will have role as "admin" by default
 // Password is hashed before it is stored in the database
 // Username is validated to be unique
-func CreateUser(user Domain.User) error {
-	users := GetUsers()
+func (u *UserService) CreateUser(user Domain.User) error {
+	users := u.GetUsers()
 	if len(users) == 0 {
 		user.Role = "admin"
 	} else {
@@ -73,7 +90,7 @@ func CreateUser(user Domain.User) error {
 }
 
 // Promotes the user whose id is given into an "admin"
-func Promote(id int) error {
+func (u *UserService) Promote(id int) error {
 	filter := bson.M{"id": id}
 	user := user_collection.FindOne(user_ctx, filter)
 
@@ -97,7 +114,7 @@ func Promote(id int) error {
 }
 
 // Returns use whose username matches the inputted username
-func GetUserbyUsername(username string) (Domain.User, error) {
+func (u *UserService) GetUserbyUsername(username string) (Domain.User, error) {
 	filter := bson.M{"username": username}
 	var user Domain.User
 	err := user_collection.FindOne(user_ctx, filter).Decode(&user)
