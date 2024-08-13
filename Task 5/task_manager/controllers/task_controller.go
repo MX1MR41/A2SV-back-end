@@ -10,16 +10,31 @@ import (
 )
 
 // Initialize the TaskService interface
-var taskService = data.NewTaskService()
+var taskService data.ITaskService = data.NewTaskService()
+
+type ITaskController interface {
+	GetTasks(c *gin.Context)
+	GetTaskByID(c *gin.Context)
+	CreateTask(c *gin.Context)
+	UpdateTask(c *gin.Context)
+	DeleteTask(c *gin.Context)
+}
+
+func NewTaskController() *TaskController {
+	return &TaskController{}
+}
+
+type TaskController struct {
+}
 
 // GetTasks retrieves all tasks from the MongoDB collection
-func GetTasks(c *gin.Context) {
+func (t *TaskController) GetTasks(c *gin.Context) {
 	tasks := taskService.GetTasks()
 	c.JSON(http.StatusOK, tasks)
 }
 
 // GetTaskByID retrieves a task by its ID from the MongoDB collection
-func GetTaskByID(c *gin.Context) {
+func (t *TaskController) GetTaskByID(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid task ID"})
@@ -34,7 +49,7 @@ func GetTaskByID(c *gin.Context) {
 }
 
 // CreateTask inserts a new task into the MongoDB collection
-func CreateTask(c *gin.Context) {
+func (t *TaskController) CreateTask(c *gin.Context) {
 	var task models.Task
 	if err := c.ShouldBindJSON(&task); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -45,7 +60,7 @@ func CreateTask(c *gin.Context) {
 }
 
 // UpdateTask updates an existing task in the MongoDB collection by its ID
-func UpdateTask(c *gin.Context) {
+func (t *TaskController) UpdateTask(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid task ID"})
@@ -69,7 +84,7 @@ func UpdateTask(c *gin.Context) {
 }
 
 // DeleteTask deletes a task from the MongoDB collection by its ID
-func DeleteTask(c *gin.Context) {
+func (t *TaskController) DeleteTask(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid task ID"})
