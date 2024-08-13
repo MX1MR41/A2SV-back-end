@@ -9,10 +9,7 @@ import (
 	"strconv"
 )
 
-// Creates a new library
-var library = services.NewLibrary()
-
-func Run() {
+func Run(library services.LibraryManager) {
 	// Initializing a scanner to read input from the console
 	scanner := bufio.NewScanner(os.Stdin)
 
@@ -38,28 +35,28 @@ func Run() {
 		// Perform the corresponding action based on the user's choice
 		case 1:
 			fmt.Println("+------------------------------------------------------------+")
-			addBook(scanner)
+			addBook(scanner, library)
 		case 2:
 			fmt.Println("+------------------------------------------------------------+")
-			removeBook(scanner)
+			removeBook(scanner, library)
 		case 3:
 			fmt.Println("+------------------------------------------------------------+")
-			borrowBook(scanner)
+			borrowBook(scanner, library)
 		case 4:
 			fmt.Println("+------------------------------------------------------------+")
-			returnBook(scanner)
+			returnBook(scanner, library)
 		case 5:
 			fmt.Println("+------------------------------------------------------------+")
-			listAvailableBooks()
+			listAvailableBooks(library)
 		case 6:
 			fmt.Println("+------------------------------------------------------------+")
-			listBorrowedBooks(scanner)
+			listBorrowedBooks(scanner, library)
 		case 7:
 			fmt.Println("+------------------------------------------------------------+")
-			addMember(scanner)
+			addMember(scanner, library)
 		case 8:
 			fmt.Println("+------------------------------------------------------------+")
-			listMembers()
+			listMembers(library)
 		case 9:
 			fmt.Println("Exiting...")
 			return
@@ -72,7 +69,7 @@ func Run() {
 // Function to add a book to the library
 // It accepts a scanner to read input from the console
 // And prints the corresponding messages based on the result
-func addBook(scanner *bufio.Scanner) {
+func addBook(scanner *bufio.Scanner, library services.LibraryManager) {
 	fmt.Print("Enter book ID: ")
 	scanner.Scan()
 	id, _ := strconv.Atoi(scanner.Text())
@@ -93,7 +90,7 @@ func addBook(scanner *bufio.Scanner) {
 // Function to remove a book from the library
 // It accepts a scanner to read input from the console
 // And prints the corresponding messages based on the result
-func removeBook(scanner *bufio.Scanner) {
+func removeBook(scanner *bufio.Scanner, library services.LibraryManager) {
 	fmt.Print("Enter book ID to remove: ")
 	scanner.Scan()
 	id, _ := strconv.Atoi(scanner.Text())
@@ -105,7 +102,7 @@ func removeBook(scanner *bufio.Scanner) {
 // Function to borrow a book from the library
 // It accepts a scanner to read input from the console
 // And prints the corresponding messages based on the result
-func borrowBook(scanner *bufio.Scanner) {
+func borrowBook(scanner *bufio.Scanner, library services.LibraryManager) {
 	fmt.Print("Enter book ID to borrow: ")
 	scanner.Scan()
 	bookID, _ := strconv.Atoi(scanner.Text())
@@ -126,7 +123,7 @@ func borrowBook(scanner *bufio.Scanner) {
 // Function to return a book to the library
 // It accepts a scanner to read input from the console
 // And prints the corresponding messages based on the result
-func returnBook(scanner *bufio.Scanner) {
+func returnBook(scanner *bufio.Scanner, library services.LibraryManager) {
 	fmt.Print("Enter book ID to return: ")
 	scanner.Scan()
 	bookID, _ := strconv.Atoi(scanner.Text())
@@ -146,7 +143,7 @@ func returnBook(scanner *bufio.Scanner) {
 
 // Function to list all available books in the library
 // It accepts no arguments and prints the list of available books
-func listAvailableBooks() {
+func listAvailableBooks(library services.LibraryManager) {
 	// Calls the ListAvailableBooks method of the library service to get the list of available books
 	books := library.ListAvailableBooks()
 	// If there are no available books, print the following message
@@ -164,7 +161,7 @@ func listAvailableBooks() {
 // Function to list all borrowed books by a member
 // It accepts a scanner to read input from the console
 // And prints the list of borrowed books by the member
-func listBorrowedBooks(scanner *bufio.Scanner) {
+func listBorrowedBooks(scanner *bufio.Scanner, library services.LibraryManager) {
 	fmt.Print("Enter member ID: ")
 	scanner.Scan()
 	memberID, _ := strconv.Atoi(scanner.Text())
@@ -186,7 +183,7 @@ func listBorrowedBooks(scanner *bufio.Scanner) {
 // Function to add a new member to the library
 // It accepts a scanner to read input from the console
 // And prints the corresponding messages based on the result
-func addMember(scanner *bufio.Scanner) {
+func addMember(scanner *bufio.Scanner, library services.LibraryManager) {
 	fmt.Print("Enter member ID: ")
 	scanner.Scan()
 	id, _ := strconv.Atoi(scanner.Text())
@@ -203,7 +200,7 @@ func addMember(scanner *bufio.Scanner) {
 // Function to list all members in the library
 // It accepts no arguments and prints the list of members
 // Calls the ListMembers method of the library service to get the list of members
-func listMembers() {
+func listMembers(library services.LibraryManager) {
 	members := library.ListMembers()
 	if len(members) == 0 {
 		fmt.Println("No members.")

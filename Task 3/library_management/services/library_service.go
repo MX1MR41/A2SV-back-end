@@ -31,7 +31,7 @@ type LibraryManager interface {
 	ListMembers() []models.Member                 // ListMembers lists all members in the library.
 }
 
-// Implemntation of LibraryManager interface
+// Implementation of LibraryManager interface
 
 func (l *Library) AddMember(member models.Member) {
 	l.Members[member.ID] = member
