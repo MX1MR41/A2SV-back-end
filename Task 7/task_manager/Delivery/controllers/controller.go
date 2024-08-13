@@ -26,8 +26,8 @@ func NewController() IController {
 	return &Controller{}
 }
 
-var taskService = Usecases.NewTaskService()
-var userService = Usecases.NewUserService()
+var taskService Usecases.ITaskService = Usecases.NewTaskService()
+var userService Usecases.IUserService = Usecases.NewUserService()
 
 func (t *Controller) GetTasks(c *gin.Context) {
 

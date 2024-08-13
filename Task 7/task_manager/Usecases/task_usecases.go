@@ -5,7 +5,7 @@ import (
 	"task_manager/Repositories"
 )
 
-var taskRepo = Repositories.NewTaskRepository()
+var taskRepo Repositories.ITaskRepository = Repositories.NewTaskRepository()
 
 type ITaskService interface {
 	GetTasks() []Domain.Task

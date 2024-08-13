@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var controller = controllers.NewController()
+var controller controllers.IController = controllers.NewController()
 
 func SetupRouter() *gin.Engine {
 	r := gin.Default()

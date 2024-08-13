@@ -8,7 +8,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var userRepo = Repositories.NewUserRepository()
+var userRepo Repositories.IUserRepsoitory = Repositories.NewUserRepository()
 
 type IUserService interface {
 	GetUsers() []Domain.User

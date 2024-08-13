@@ -10,7 +10,7 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-var userservice = Usecases.NewUserService()
+var userservice Usecases.IUserService = Usecases.NewUserService()
 
 func Login(c *gin.Context) {
 	var user Domain.User
