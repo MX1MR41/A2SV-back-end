@@ -9,14 +9,29 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var taskService data.TaskService = *data.NewTaskService()
+var taskService data.ITaskService = data.NewTaskService()
 
-func GetTasks(c *gin.Context) {
+type ITaskController interface {
+	GetTasks(c *gin.Context)
+	GetTaskByID(c *gin.Context)
+	CreateTask(c *gin.Context)
+	UpdateTask(c *gin.Context)
+	DeleteTask(c *gin.Context)
+}
+
+type TaskController struct {
+}
+
+func NewTaskController() *TaskController {
+	return &TaskController{}
+}
+
+func (t *TaskController) GetTasks(c *gin.Context) {
 	tasks := taskService.GetTasks()
 	c.JSON(http.StatusOK, tasks)
 }
 
-func GetTaskByID(c *gin.Context) {
+func (t *TaskController) GetTaskByID(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid task ID"})
@@ -32,7 +47,7 @@ func GetTaskByID(c *gin.Context) {
 	c.JSON(http.StatusOK, task)
 }
 
-func CreateTask(c *gin.Context) {
+func (t *TaskController) CreateTask(c *gin.Context) {
 	var task models.Task
 	if err := c.ShouldBindJSON(&task); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -43,7 +58,7 @@ func CreateTask(c *gin.Context) {
 	c.JSON(http.StatusCreated, task)
 }
 
-func UpdateTask(c *gin.Context) {
+func (t *TaskController) UpdateTask(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid task ID"})
@@ -65,7 +80,7 @@ func UpdateTask(c *gin.Context) {
 	c.JSON(http.StatusOK, task)
 }
 
-func DeleteTask(c *gin.Context) {
+func (t *TaskController) DeleteTask(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid task ID"})
