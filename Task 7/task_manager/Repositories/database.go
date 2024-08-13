@@ -9,10 +9,9 @@ import (
 )
 
 var (
-	ctx             = context.TODO()  // Variable that will store the context for MongoDB operations
-	client          *mongo.Client     // MongoDB client
-	task_collection *mongo.Collection // Variable that will hold reference to the MongoDB collection of tasks
-	user_collection *mongo.Collection // Variable that will hold reference to the MongoDB collection of users
+	ctx    = context.TODO() // Variable that will store the context for MongoDB operations
+	client *mongo.Client    // MongoDB client
+
 )
 
 func init() {

@@ -2,22 +2,14 @@ package Usecases
 
 import (
 	"errors"
-	"fmt"
-	"log"
 	"task_manager/Domain"
 	"task_manager/Repositories"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 )
 
-var user_ctx = Repositories.GetContext()
+var userRepo = Repositories.NewUserRepository()
 
-var userRepo = Repositories.NewUserRepository()    // userRepo is an instance of UserRepository
-var user_collection = userRepo.GetUserCollection() // user_collection is a mongo collection of users
-// Interface for UserService
 type IUserService interface {
 	GetUsers() []Domain.User
 	CreateUser(user Domain.User) error
@@ -25,39 +17,18 @@ type IUserService interface {
 	GetUserbyUsername(username string) (Domain.User, error)
 }
 
-// Struct for UserService
 type UserService struct{}
 
-// Returns a new instance of UserService
 func NewUserService() IUserService {
 	return &UserService{}
 }
 
-// Returns a list of all users from the database
 func (u *UserService) GetUsers() []Domain.User {
-	var users []Domain.User
-	cursor, err := user_collection.Find(user_ctx, bson.M{})
 
-	if err != nil {
-		log.Fatal(err)
-	}
+	return userRepo.GetUsers()
 
-	for cursor.Next(user_ctx) {
-		var user Domain.User
-		if err := cursor.Decode(&user); err != nil {
-			log.Fatal(err)
-		}
-
-		users = append(users, user)
-	}
-
-	return users
 }
 
-// Creates user into the database
-// First user will have role as "admin" by default
-// Password is hashed before it is stored in the database
-// Username is validated to be unique
 func (u *UserService) CreateUser(user Domain.User) error {
 	users := u.GetUsers()
 	if len(users) == 0 {
@@ -66,7 +37,7 @@ func (u *UserService) CreateUser(user Domain.User) error {
 		user.Role = "user"
 	}
 
-	user.ID = getNextUserID()
+	user.ID = GetNextUserID()
 
 	user_name := user.Username
 
@@ -82,56 +53,29 @@ func (u *UserService) CreateUser(user Domain.User) error {
 	}
 
 	user.Password = string(hashedPassword)
-	if _, err := user_collection.InsertOne(user_ctx, user); err != nil {
+	if err := userRepo.CreateUser(user); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-// Promotes the user whose id is given into an "admin"
 func (u *UserService) Promote(id int) error {
-	filter := bson.M{"id": id}
-	user := user_collection.FindOne(user_ctx, filter)
-
-	if err := user.Err(); err != nil {
-		if err == mongo.ErrNoDocuments {
-			// Return the string "user not found" if the user is not found in an error format
-			return fmt.Errorf("user not found")
-		}
-		fmt.Println("Error finding user:", err)
-		return err
-	}
-
-	fmt.Println("PROMOTED USER IS ", user)
-	update := bson.M{"$set": bson.M{"role": "admin"}}
-	_, err := user_collection.UpdateOne(user_ctx, filter, update)
-	if err != nil {
-		fmt.Println(err)
+	if err := userRepo.Promote(id); err != nil {
 		return err
 	}
 	return nil
 }
 
-// Returns use whose username matches the inputted username
 func (u *UserService) GetUserbyUsername(username string) (Domain.User, error) {
-	filter := bson.M{"username": username}
-	var user Domain.User
-	err := user_collection.FindOne(user_ctx, filter).Decode(&user)
+	user, err := userRepo.GetUserbyUsername(username)
 	if err != nil {
 		return user, err
-
 	}
 	return user, nil
 }
 
-func getNextUserID() int {
-	var user Domain.User
-	findOptions := options.FindOne().SetSort(bson.D{{Key: "id", Value: -1}})
-	err := user_collection.FindOne(user_ctx, bson.D{}, findOptions).Decode(&user)
-	if err != nil {
-		// If no users exist, return 1 as the first ID
-		return 1
-	}
-	return user.ID + 1
+func GetNextUserID() int {
+	id := userRepo.GetNextUserID()
+	return id
 }

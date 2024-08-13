@@ -1,6 +1,5 @@
 package Domain
 
-// Task struct defines the Task data model
 type Task struct {
 	ID          int    `json:"id"`
 	Title       string `json:"title"`
@@ -9,7 +8,6 @@ type Task struct {
 	Status      string `json:"status"`
 }
 
-// User struct defines the User data model
 type User struct {
 	ID       int    `json:"id"`
 	Username string `json:"username"`
