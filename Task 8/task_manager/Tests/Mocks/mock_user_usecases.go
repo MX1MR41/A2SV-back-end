@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-// MockUserUsecases is a mock implementation of the IUserRepository interface
 type MockUserUsecases struct {
 	mock.Mock
 }
