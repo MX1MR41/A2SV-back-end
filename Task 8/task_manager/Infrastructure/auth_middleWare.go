@@ -10,36 +10,39 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-var userservice Usecases.IUserService = Usecases.NewUserService("task_manager")
+var userservice Usecases.IUserService
 
-func Login(c *gin.Context) {
-	var user Domain.User
+func Login(dbName string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var user Domain.User
+		userservice = Usecases.NewUserService(dbName)
 
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(400, gin.H{"error": "Invalid payload request"})
+		if err := c.ShouldBindJSON(&user); err != nil {
+			c.JSON(400, gin.H{"error": "Invalid payload request"})
+			return
+		}
 
-		return
+		existingUser, err := userservice.GetUserbyUsername(user.Username)
+		if err != nil {
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
+		}
+
+		fmt.Println(existingUser.Username, existingUser.Role, existingUser.Password)
+
+		if err := ComparePasswords(existingUser.Password, user.Password); err != nil {
+			c.JSON(400, gin.H{"error": "Wrong Password"})
+			return
+		}
+
+		signedToken, err := GenerateToken(user.Username, existingUser.Role)
+		if err != nil {
+			c.JSON(500, gin.H{"error": "Failed to generate token"})
+			return
+		}
+
+		c.JSON(200, gin.H{"message": "Successfully logged in", "token": signedToken})
 	}
-
-	existingUser, err := userservice.GetUserbyUsername(user.Username)
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-
-	fmt.Println(existingUser.Username, existingUser.Role, existingUser.Password)
-	if err := ComparePasswords(existingUser.Password, user.Password); err != nil {
-		c.JSON(400, gin.H{"error": "Wrong Password"})
-		return
-	}
-
-	signedToken, err := GenerateToken(user.Username, existingUser.Role)
-	if err != nil {
-		c.JSON(500, gin.H{"error": "Failed to generate token"})
-		return
-	}
-
-	c.JSON(200, gin.H{"message": "Successfully logged in", "token": signedToken})
 }
 
 func Logged(c *gin.Context) {

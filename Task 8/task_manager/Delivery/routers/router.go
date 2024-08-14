@@ -19,7 +19,7 @@ func SetupRouter() *gin.Engine {
 	r.DELETE("/tasks/:id", Infrastructure.Admin, controller.DeleteTask)
 
 	r.POST("/register", controller.CreateUser)
-	r.POST("/login", Infrastructure.Login)
+	r.POST("/login", Infrastructure.Login("task_manager"))
 	r.GET("/users", Infrastructure.Admin, controller.GetUsers)
 	r.POST("/users/promote/:id", Infrastructure.Admin, controller.Promote)
 

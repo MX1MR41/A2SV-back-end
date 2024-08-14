@@ -29,6 +29,9 @@ func (suite *TaskUsecaseTestSuite) TearDownTest() {
 	suite.taskService = nil
 }
 
+// Since most functionalities in the task_usecases depend on GetTaskByID
+// We will test GetTaskByID functionality when the task doesn't exist
+
 func (suite *TaskUsecaseTestSuite) TestGetTaskByID_TaskDoesNotExist() {
 
 	suite.taskRepo.On("GetTaskByID", 1).Return(Domain.Task{}, errors.New("mongo: no documents in result"))

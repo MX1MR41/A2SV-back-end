@@ -85,6 +85,17 @@ func (suite *ControllerTestSuite) TestPromote_NotAuthorized() {
 	assert.Equal(suite.T(), http.StatusUnauthorized, w.Code)
 }
 
+func (suite *ControllerTestSuite) TestGetTaskByID_TaskDoesNotExist() {
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Params = gin.Params{{Key: "id", Value: "999"}}
+
+	suite.taskRepo.On("GetTaskByID", 999).Return(Domain.Task{}, errors.New("mongo: no documents in result"))
+	suite.controller.GetTaskByID(c)
+
+	assert.Equal(suite.T(), http.StatusNotFound, w.Code)
+}
+
 func TestControllerTestSuite(t *testing.T) {
 	suite.Run(t, new(ControllerTestSuite))
 }
