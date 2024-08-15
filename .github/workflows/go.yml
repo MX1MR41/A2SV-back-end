@@ -12,23 +12,9 @@ jobs:
   test:
     runs-on: windows-latest
 
-    services:
-      mongodb:
-        image: mongo:4.4.6
-        env:
-          MONGO_INITDB_ROOT_USERNAME: admin
-          MONGO_INITDB_ROOT_PASSWORD: admin
-          MONGO_INITDB_DATABASE: APP-DB
-        ports:
-          - 27017:27017
-        options: >-
-          --health-cmd 'mongosh --eval "db.runCommand({ ping: 1 })"'
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Set up Go
         uses: actions/setup-go@v3
@@ -37,16 +23,12 @@ jobs:
 
       - name: Install MongoDB Client
         run: |
-          sudo apt-get update
-          sudo apt-get install -y mongodb-clients
+          choco install mongodb --version 4.4.6
+          mongosh --version
 
       - name: Initialize MongoDB
         run: |
-          mongosh --host localhost:27017 -u admin -p admin --authenticationDatabase admin <<EOF
-            db = db.getSiblingDB('APP-DB');
-            db.createUser({ user: 'APP-USERNAME', pwd: 'APP-PASSWORD', roles: [{ role: 'readWrite', db: 'APP-DB' }] })
-            db.createCollection('APP-COLLECTION');
-          EOF
+          mongosh --host localhost:27017 -u admin -p admin --authenticationDatabase admin --eval "db = db.getSiblingDB('APP-DB'); db.createUser({ user: 'APP-USERNAME', pwd: 'APP-PASSWORD', roles: [{ role: 'readWrite', db: 'APP-DB' }] }); db.createCollection('APP-COLLECTION');"
 
       - name: Cache Go Modules
         uses: actions/cache@v3
