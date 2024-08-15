@@ -24,8 +24,8 @@ jobs:
       - name: Install MongoDB Server
         run: choco install mongodb --version 4.4.6
 
-      - name: Start MongoDB Server
-        run: net start MongoDB
+      # - name: Start MongoDB Server
+      #   run: net start MongoDB
 
       - name: Cache Go Modules
         uses: actions/cache@v3
