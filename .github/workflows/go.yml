@@ -39,8 +39,8 @@ jobs:
 
       - name: Install Go Modules
         run: go mod download
-        working-directory: Task\ 8/task_manager
+        working-directory: Task 8/task_manager
 
       - name: Run Tests
         run: go test ./...
-        working-directory: Task\ 8/task_manager
+        working-directory: Task 8/task_manager
