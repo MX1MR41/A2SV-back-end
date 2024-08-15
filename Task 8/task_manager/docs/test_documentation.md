@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document details the comprehensive unit test suite implemented for the Task Management API using the `testify` library. The purpose of these tests is to ensure the correctness, stability, and reliability of the API's components, including domain models, use cases, controllers, and infrastructure.
+This document details the comprehensive unit test suite implemented for the Task Management API using the `testify` library. The purpose of these tests is to ensure the correctness, stability, and reliability of the API's components, including domain models, use cases, controllers and infrastructure.
 
 ## Table of Contents
 - [Test Suite Setup](#test-suite-setup)
