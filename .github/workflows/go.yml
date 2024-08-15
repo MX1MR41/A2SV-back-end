@@ -21,19 +21,11 @@ jobs:
         with:
           go-version: '1.22.5'
 
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
+      - name: Install MongoDB Server
+        run: choco install mongodb --version 4.4.6
 
-      - name: Install MongoDB Shell
-        run: |
-          npm install -g @mongodb-js/mongosh
-          mongosh --version
-
-      - name: Initialize MongoDB
-        run: |
-          mongosh --host localhost:27017 -u admin -p admin --authenticationDatabase admin --eval "db = db.getSiblingDB('APP-DB'); db.createUser({ user: 'APP-USERNAME', pwd: 'APP-PASSWORD', roles: [{ role: 'readWrite', db: 'APP-DB' }] }); db.createCollection('APP-COLLECTION');"
+      - name: Start MongoDB Server
+        run: net start MongoDB
 
       - name: Cache Go Modules
         uses: actions/cache@v3
