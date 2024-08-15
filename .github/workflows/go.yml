@@ -25,7 +25,9 @@ jobs:
         run: choco install mongodb --version 4.4.6
 
       - name: Set working directory
-        run: cd Task 8/task_manager
+        run: |
+          cd "Task 8"
+          cd task_manager
 
       - name: Cache Go Modules
         uses: actions/cache@v3
