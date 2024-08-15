@@ -25,10 +25,11 @@ jobs:
         run: choco install mongodb --version 4.4.6
 
       - name: Install MongoDB Shell
-        run: choco install mongosh --version 1.8.0
-
-      - name: Verify mongosh Installation
-        run: mongosh --version
+        run: |
+          Invoke-WebRequest -Uri "https://downloads.mongodb.com/compass/mongodb-mongosh-1.8.0-win32-x64.zip" -OutFile "mongosh.zip"
+          Expand-Archive -Path "mongosh.zip" -DestinationPath "$env:ProgramFiles"
+          $env:PATH += ";$env:ProgramFiles\mongodb-mongosh-1.8.0-win32-x64\bin"
+          mongosh --version
 
       - name: Initialize MongoDB
         run: |
