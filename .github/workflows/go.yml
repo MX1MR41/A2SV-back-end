@@ -24,21 +24,23 @@ jobs:
       - name: Install MongoDB Server
         run: choco install mongodb --version 4.4.6
 
-      # - name: Start MongoDB Server
-      #   run: net start MongoDB
+      - name: Set working directory
+        run: cd Task\ 8/task_manager
 
       - name: Cache Go Modules
         uses: actions/cache@v3
         with:
           path: |
-            **/go.sum
-            **/go.mod
-          key: ${{ runner.os }}-go-modules-${{ hashFiles('**/go.sum') }}
+            Task\ 8/task_manager/go.sum
+            Task\ 8/task_manager/go.mod
+          key: ${{ runner.os }}-go-modules-${{ hashFiles('Task 8/task_manager/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-modules-
 
       - name: Install Go Modules
         run: go mod download
+        working-directory: Task\ 8/task_manager
 
       - name: Run Tests
         run: go test ./...
+        working-directory: Task\ 8/task_manager
