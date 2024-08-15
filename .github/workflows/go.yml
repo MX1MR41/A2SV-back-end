@@ -10,7 +10,7 @@ on:
 
 jobs:
   test:
-    runs-on: macos-latest  # or other available runners
+    runs-on: ubuntu-20.04
 
     services:
       mongodb:
