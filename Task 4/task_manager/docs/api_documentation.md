@@ -1,4 +1,3 @@
-
 # Task Management REST API Documentation
 
 ## Overview
@@ -202,8 +201,3 @@ To run the application, use the following commands:
    ```
 
 The API will be accessible at `http://localhost:8080`.
-
-## Conclusion
-
-This documentation provides an overview of the Task Management REST API, including the available endpoints, request and response formats, error handling, and instructions for running and testing the API. This API serves as a foundational example of building RESTful services using Go and the Gin framework.
-
