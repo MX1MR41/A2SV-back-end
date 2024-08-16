@@ -13,6 +13,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// Define the test suites
 type PasswordServiceTestSuite struct {
 	suite.Suite
 }
@@ -26,6 +27,7 @@ type AuthMiddlewareTestSuite struct {
 	router *gin.Engine
 }
 
+// Setup the test suites
 func (suite *AuthMiddlewareTestSuite) SetupSuite() {
 	gin.SetMode(gin.TestMode)
 	suite.router = gin.Default()

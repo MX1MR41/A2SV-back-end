@@ -8,13 +8,17 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// MockUserRepository is a mock type for the UserRepository interface
 type MockUserRepository struct {
 	mock.Mock
 }
 
+// MockCursor is a mock type for the mongo.Cursor interface
 type MockCursor struct {
 	mock.Mock
 }
+
+// Define the methods that will be called in the tests
 
 func (m *MockUserRepository) InsertOne(ctx context.Context, document interface{}) (*mongo.InsertOneResult, error) {
 	args := m.Called(ctx, document)

@@ -8,10 +8,12 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// MockTaskRepository is a mock type for the TaskRepository interface
 type MockTaskRepository struct {
-	mock.Mock
+	mock.Mock // Embed the testify mock
 }
 
+// Define the methods that will be called in the tests
 func (m *MockTaskRepository) InsertOne(ctx context.Context, document interface{}) (*mongo.InsertOneResult, error) {
 	args := m.Called(ctx, document)
 	return args.Get(0).(*mongo.InsertOneResult), args.Error(1)

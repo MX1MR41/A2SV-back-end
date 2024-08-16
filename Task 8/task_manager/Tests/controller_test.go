@@ -17,23 +17,26 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
+// Define the suite
 type ControllerTestSuite struct {
-	suite.Suite
-	userRepo    *Mocks.MockUserRepository
-	taskRepo    *Mocks.MockTaskRepository
-	userService Usecases.IUserService
-	taskService Usecases.ITaskService
-	controller  controllers.IController
+	suite.Suite                           // Embed the testify suite
+	userRepo    *Mocks.MockUserRepository // Mocked user repository
+	taskRepo    *Mocks.MockTaskRepository // Mocked task repository
+	userService Usecases.IUserService     // User service
+	taskService Usecases.ITaskService     // Task service
+	controller  controllers.IController   // Controller
 }
 
+// Setup the test suite
 func (suite *ControllerTestSuite) SetupTest() {
-	suite.userRepo = new(Mocks.MockUserRepository)
-	suite.userService = Usecases.NewUserService("test_task_manager")
+	suite.userRepo = new(Mocks.MockUserRepository)                   // Create a new mock user repository
+	suite.userService = Usecases.NewUserService("test_task_manager") // Create a new user service with mock database "test_task_manager"
 	suite.taskRepo = new(Mocks.MockTaskRepository)
 	suite.taskService = Usecases.NewTaskService("test_task_manager")
-	suite.controller = controllers.NewController()
+	suite.controller = controllers.NewController() // Create a new controller
 }
 
+// Tear down the test suite
 func (suite *ControllerTestSuite) TearDownTest() {
 	suite.userRepo = nil
 	suite.userService = nil
@@ -96,6 +99,7 @@ func (suite *ControllerTestSuite) TestGetTaskByID_TaskDoesNotExist() {
 	assert.Equal(suite.T(), http.StatusNotFound, w.Code)
 }
 
+// Run the test suite
 func TestControllerTestSuite(t *testing.T) {
 	suite.Run(t, new(ControllerTestSuite))
 }

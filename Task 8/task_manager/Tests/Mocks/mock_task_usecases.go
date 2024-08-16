@@ -6,10 +6,12 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+// MockTaskUsecases is a mock type for the TaskUsecases interface
 type MockTaskUsecases struct {
-	mock.Mock
+	mock.Mock // Embed the testify mock
 }
 
+// Define the methods that will be called in the tests
 func (m *MockTaskUsecases) GetTasks() []Domain.Task {
 	args := m.Called()
 	return args.Get(0).([]Domain.Task)

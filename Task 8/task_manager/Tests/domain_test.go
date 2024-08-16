@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// Test the Task struct
 func TestTaskStruct(t *testing.T) {
 	task := Domain.Task{
 		ID:          1,
@@ -24,6 +25,7 @@ func TestTaskStruct(t *testing.T) {
 	assert.Equal(t, "Pending", task.Status)
 }
 
+// Test the User struct
 func TestUserStruct(t *testing.T) {
 	user := Domain.User{
 		ID:       1,

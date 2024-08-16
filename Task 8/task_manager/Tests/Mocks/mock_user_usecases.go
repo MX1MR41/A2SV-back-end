@@ -6,10 +6,12 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+// MockUserUsecases is a mock type for the UserUsecases interface
 type MockUserUsecases struct {
-	mock.Mock
+	mock.Mock // Embed the testify mock
 }
 
+// Define the methods that will be called in the tests
 func (m *MockUserUsecases) GetUsers() []Domain.User {
 	args := m.Called()
 	return args.Get(0).([]Domain.User)

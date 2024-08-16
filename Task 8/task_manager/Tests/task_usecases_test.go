@@ -12,18 +12,21 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
+// Define the suite, and the methods that will be called in the tests
 type TaskUsecaseTestSuite struct {
-	suite.Suite
-	taskRepo    *Mocks.MockTaskRepository
-	taskService Usecases.ITaskService
+	suite.Suite                           // Embed the testify suite
+	taskRepo    *Mocks.MockTaskRepository // Mocked repository
+	taskService Usecases.ITaskService     // The service to test
 }
 
+// Setup the test suite
 func (suite *TaskUsecaseTestSuite) SetupTest() {
-	suite.taskRepo = new(Mocks.MockTaskRepository)
-	suite.taskService = Usecases.NewTaskService("test_task_manager")
+	suite.taskRepo = new(Mocks.MockTaskRepository)                   // Create a new mock task repository
+	suite.taskService = Usecases.NewTaskService("test_task_manager") // Create a new task service with mock database "test_task_manager"
 
 }
 
+// Tear down the test suite
 func (suite *TaskUsecaseTestSuite) TearDownTest() {
 	suite.taskRepo = nil
 	suite.taskService = nil
@@ -42,6 +45,7 @@ func (suite *TaskUsecaseTestSuite) TestGetTaskByID_TaskDoesNotExist() {
 	assert.Equal(suite.T(), Domain.Task{}, task)
 }
 
+// Run the test suite
 func TestTaskUsecaseTestSuite(t *testing.T) {
 	suite.Run(t, new(TaskUsecaseTestSuite))
 }
