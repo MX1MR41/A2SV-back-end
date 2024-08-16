@@ -1,3 +1,8 @@
+/*
+A go program that checks if a string is a palindrome,
+and counts the frequency of words in a string,
+*/
+
 package main
 
 import (
@@ -53,8 +58,9 @@ func main() {
 	fmt.Println("Press 3 to exit.")
 
 	fmt.Scanln(&choice)
-	if choice == 1 {
 
+	switch choice {
+	case 1:
 		fmt.Print("Enter a string: ")
 		s, _ := reader.ReadString('\n')
 		s = strings.TrimSpace(s)
@@ -65,8 +71,7 @@ func main() {
 			fmt.Printf("%s: %d\n", word, count)
 		}
 
-	} else if choice == 2 {
-
+	case 2:
 		fmt.Print("Enter a string: ")
 		s, _ := reader.ReadString('\n')
 		s = strings.TrimSpace(s)
@@ -78,11 +83,10 @@ func main() {
 			fmt.Println("The string is not a palindrome.")
 		}
 
-	} else if choice == 3 {
-
+	case 3:
 		return
 
-	} else {
+	default:
 		fmt.Println("Invalid choice, please try again.")
 	}
 }
