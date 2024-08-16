@@ -1,3 +1,9 @@
+/*
+A simple console-based library management system that allows users
+to add, remove, borrow, return, list available and borrowed books in the library.
+It also allows users to add members and list in the library.
+*/
+
 package main
 
 import (

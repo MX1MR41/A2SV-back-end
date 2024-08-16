@@ -83,11 +83,3 @@ This file contains the `Library` struct and methods to manage books and members.
 
 ## Error Handling
 - The application handles common errors such as attempting to borrow a book that is already borrowed or returning a book that is not borrowed.
-
-## Extending the Application
-- New features and functionalities can be added by extending the `Library` struct and implementing new methods in the `services` package.
-
-## Conclusion
-This documentation provides an overview of the Library Management System's structure and usage. For detailed implementation, refer to the source code in the respective files.
-
----
