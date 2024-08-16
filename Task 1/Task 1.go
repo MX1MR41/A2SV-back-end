@@ -1,3 +1,7 @@
+/*
+A go program that calculates the average grade of a student
+based on the grades of the subjects they took.
+*/
 package main
 
 import (
