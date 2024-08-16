@@ -11,11 +11,14 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// Global variable with which tokens will be hashed with and signed on
+// the "secret" with which tokens will be hashed with and signed on
 var jwtSecret = []byte("shhhh... it's a secret")
+
 var userService = data.NewUserService()
 
 // Login functionality
+// It checks if the user exists in the database and if the password matches
+// If it does, it creates a new token with the user's username and role as claims and sends it back
 func Login(c *gin.Context) {
 	var user models.User
 
@@ -24,11 +27,13 @@ func Login(c *gin.Context) {
 		return
 	}
 
+	// See if the username is already in use by another user
 	existingUser, err := userService.GetUserbyUsername(user.Username)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+
 	// Hash inputted password and check to see if it matches with the stored password
 	if err := bcrypt.CompareHashAndPassword([]byte(existingUser.Password), []byte(user.Password)); err != nil {
 		c.JSON(400, gin.H{"error": "Wrong Password"})
@@ -41,7 +46,7 @@ func Login(c *gin.Context) {
 		"role":     existingUser.Role,
 	})
 
-	// Hash encoded token with the jwtSecret and append the result
+	// Hash the encoded token with the jwtSecret and append the result
 	// to the token as a signature
 	signedToken, err := token.SignedString(jwtSecret)
 	if err != nil {
@@ -62,6 +67,7 @@ func Logged(c *gin.Context) {
 		c.Abort()
 		return
 	}
+
 	// Split it into "Bearer" and <token>
 	authParts := strings.Split(authHeader, " ")
 	if len(authParts) != 2 || authParts[0] != "Bearer" {
@@ -69,8 +75,9 @@ func Logged(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	// After validating the signing method, decode the header and payload that contains the claims
-	// and re-hash them with the jwtSecret to ensure that the signature matches
+
+	// After validating the signing method, re-hash the header and payload
+	// with the jwtSecret to ensure that the signature matches
 	token, err := jwt.Parse(authParts[1], func(token *jwt.Token) (interface{}, error) {
 		// Ensure the signing method is HMAC
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -83,7 +90,7 @@ func Logged(c *gin.Context) {
 		c.JSON(401, gin.H{"error": "Invalid token"})
 	}
 
-	c.Next()
+	c.Next() // Continue to the next middleware/functionality
 
 }
 

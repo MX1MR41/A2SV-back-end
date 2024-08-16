@@ -12,6 +12,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// IUserService is an interface that defines the methods that the UserService struct should implement
 type IUserService interface {
 	GetUsers() []models.User
 	CreateUser(user models.User) error
@@ -19,8 +20,10 @@ type IUserService interface {
 	GetUserbyUsername(username string) (models.User, error)
 }
 
+// UserService struct implements the IUserService interface
 type UserService struct{}
 
+// NewUserService returns a new instance of the UserService struct
 func NewUserService() IUserService {
 	return &UserService{}
 }
@@ -118,7 +121,9 @@ func (m *UserService) GetUserbyUsername(username string) (models.User, error) {
 
 func getNextUserID() int {
 	var user models.User
+	// findOptions defines a find operation with a sort option to get the last user (highest ID)
 	findOptions := options.FindOne().SetSort(bson.D{{Key: "id", Value: -1}})
+	// Find the last user in the collection
 	err := user_collection.FindOne(ctx, bson.D{}, findOptions).Decode(&user)
 	if err != nil {
 		// If no users exist, return 1 as the first ID

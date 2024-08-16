@@ -7,23 +7,25 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// SetupRouter sets up the routes for the application
 func SetupRouter() *gin.Engine {
-	r := gin.Default() // Create a new default Gin router
+	r := gin.Default()
 
 	var controller controllers.ITaskController = controllers.NewTaskController()
 
-	// Define the routes for the application with the appropriate middleware for each
-	// tasks
+	// no middleware is required for the register functionality
+	r.POST("/register", controller.CreateUser)
+
+	// login functionality is handled by middleware.login
+	r.POST("/login", middleware.Login)
+
+	// the following routes require the user to be logged in
 	r.GET("/tasks", middleware.Logged, controller.GetTasks)
 	r.GET("/tasks/:id", middleware.Logged, controller.GetTaskByID)
+
+	// the following routes require the logged-in user to be an admin
 	r.POST("/tasks", middleware.Admin, controller.CreateTask)
 	r.PUT("/tasks/:id", middleware.Admin, controller.UpdateTask)
 	r.DELETE("/tasks/:id", middleware.Admin, controller.DeleteTask)
-
-	// users
-	r.POST("/register", controller.CreateUser)
-	r.POST("/login", middleware.Login)
 	r.GET("/users", middleware.Admin, controller.GetUsers)
 	r.POST("/users/promote/:id", middleware.Admin, controller.Promote)
 
