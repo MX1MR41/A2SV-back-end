@@ -193,10 +193,6 @@ task_manager/
 - **router/router.go:** Sets up the routing configuration for the API.
 - **docs/api_documentation.md:** This document, detailing all available endpoints and how to interact with them.
 
-### Security Considerations
-- User passwords are hashed using a secure hashing algorithm before storage.
-- JWT tokens are signed using a secure secret key to prevent tampering.
-- Ensure that the secret key used for signing JWTs is kept secure and is not hard-coded in the source code.
 
 ## Testing
 Use Postman or similar tools to test the API endpoints. Verify that:

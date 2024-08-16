@@ -8,6 +8,7 @@ import (
 
 var jwtSecret = []byte("shhhh... it's a secret")
 
+// Generates a token with claims, signs it and returns it
 func GenerateToken(username, role string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": username,
@@ -22,6 +23,7 @@ func GenerateToken(username, role string) (string, error) {
 	return signedToken, nil
 }
 
+// Checks the integrity of the token by re-signing it
 func ValidateToken(tokenString string) (*jwt.Token, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 
